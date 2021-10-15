@@ -1,30 +1,31 @@
 module.exports = function (Homework) {
+    const {AsyncArray, add, subtract, multiply, divide, less, equal, lessOrEqual} = Homework;
 
     function getLength(asyncArray) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             asyncArray.length((res) => resolve(res));
         });
     }
 
     function getElement(asyncArray, index) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             asyncArray.get(index, (res) => resolve(res));
         });
     }
 
     function getLess(value1, value2) {
-        return new Promise(function (resolve, reject) {
-            Homework.less(value1, value2, (res) => resolve(res));
+        return new Promise(function (resolve) {
+            less(value1, value2, (res) => resolve(res));
         });
     }
 
     function getAdd(value1, value2) {
-        return new Promise(function (resolve, reject) {
-            Homework.add(value1, value2, (res) => resolve(res));
+        return new Promise(function (resolve) {
+            add(value1, value2, (res) => resolve(res));
         });
     }
 
-    return (array, fn, initialValue, cb) => {
+    return (asyncArray, fn, initialValue, cb) => {
         new Promise(async function (resolve) {
             let result = initialValue;
             let length = await getLength(asyncArray).then((res) => res);
