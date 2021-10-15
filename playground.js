@@ -94,10 +94,10 @@ equal(1, 1, (result) => console.log('результат операции РАВ�
 
 lessOrEqual(12, 19, (result) => console.log('результат операции МЕНЬШЕ ИЛИ РАВНО', result));
 
-const asyncArray = new Homework.AsyncArray([1, 2, 3, 4]);
+const asyncArray = new Homework.AsyncArray([2, 2, 3, 4]);
 const reducerSum = (acc, curr, i, src, cb) => Homework.add(acc, curr, cb);
 
-reduce(asyncArray, reducerSum, 0, (res) => {
+reduce(asyncArray, reducerSum, undefined, (res) => {
     console.log(res); // 10
 });
 
@@ -128,15 +128,21 @@ function getAdd(value1, value2) {
 
 function reduce(asyncArray, fn, initialValue, cb) {
     new Promise(async function (resolve) {
-        let result = initialValue;
-        let length = await getLength(asyncArray).then((res) => res);
         let i = 0;
-        while (await getLess(i, length).then((res) => res)) {
-            let element = await getElement(asyncArray, i).then((res) => res);
+
+        let [result, length] = await Promise.all([
+            initialValue || getElement(asyncArray, 0),
+            getLength(asyncArray)
+        ])
+
+        if (!initialValue)
+            i = 1;
+        while (await getLess(i, length)) {
+            let element = await getElement(asyncArray, i);
             result = await new Promise(function (resolve) {
-                fn(result, element, i, asyncArray,(res) => resolve(res))
+                fn(result, element, i, asyncArray, (res) => resolve(res))
             });
-            i = await getAdd(i, 1).then((res) => res);
+            i = await getAdd(i, 1);
         }
         resolve(result);
     }).then(cb)
