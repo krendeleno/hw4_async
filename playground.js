@@ -97,30 +97,7 @@ lessOrEqual(12, 19, (result) => console.log('результат операции
 const asyncArray = new Homework.AsyncArray([2, 2, 3, 4]);
 const reducerSum = (acc, curr, i, src, cb) => Homework.add(acc, curr, cb);
 
-reduce(asyncArray, reducerSum, undefined, (res) => {
+const reduce = require("./solution/index")(Homework)
+reduce(asyncArray, reducerSum, 0, (res) => {
     console.log(res); // 10
 });
-
-function promisify (fn, ...args) {
-    return new Promise((resolve) => {
-        fn(...args, res => resolve(res));
-    });
-}
-
-async function reduce(asyncArray, fn, initialValue, cb) {
-        let i = 0;
-
-        let [result, length] = await Promise.all([
-            initialValue || promisify(asyncArray.get, 0),
-            promisify(asyncArray.length)
-        ])
-
-        if (!initialValue)
-            i = 1;
-        while (await promisify(less, i, length)) {
-            let element = await promisify(asyncArray.get, i);
-            result = await promisify(fn, result, element, i, asyncArray);
-            i = await promisify(add, i, 1);
-        }
-        cb(result);
-}

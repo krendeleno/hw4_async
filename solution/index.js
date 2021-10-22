@@ -1,5 +1,5 @@
 module.exports = function (Homework) {
-    const {AsyncArray, add, subtract, multiply, divide, less, equal, lessOrEqual} = Homework;
+    const {add, less} = Homework;
 
     function promisify (fn, ...args) {
         return new Promise((resolve) => {
@@ -7,7 +7,7 @@ module.exports = function (Homework) {
         });
     }
 
-    async function reduce(asyncArray, fn, initialValue, cb) {
+    return async function reduce(asyncArray, fn, initialValue, cb) {
         let i = 0;
 
         let [result, length] = await Promise.all([
