@@ -11,8 +11,8 @@ module.exports = function (Homework) {
         let i = 0;
 
         let [result, length] = await Promise.all([
-            initialValue || await promisify(asyncArray.get, 0),
-            await promisify(asyncArray.length)
+            initialValue || promisify(asyncArray.get, 0),
+            promisify(asyncArray.length)
         ])
 
         if (!initialValue)
