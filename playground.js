@@ -101,49 +101,26 @@ reduce(asyncArray, reducerSum, undefined, (res) => {
     console.log(res); // 10
 });
 
-function getLength(asyncArray) {
-    return new Promise(function (resolve, reject) {
-        asyncArray.length((res) => resolve(res));
+function promisify (fn, ...args) {
+    return new Promise((resolve) => {
+        fn(...args, res => resolve(res));
     });
 }
 
-function getElement(asyncArray, index) {
-    return new Promise(function (resolve, reject) {
-        asyncArray.get(index, (res) => resolve(res));
-    });
-}
-
-function getLess(value1, value2) {
-    return new Promise(function (resolve, reject) {
-        Homework.less(value1, value2, (res) => resolve(res));
-    });
-}
-
-function getAdd(value1, value2) {
-    return new Promise(function (resolve, reject) {
-        Homework.add(value1, value2, (res) => resolve(res));
-    });
-}
-
-
-function reduce(asyncArray, fn, initialValue, cb) {
-    new Promise(async function (resolve) {
+async function reduce(asyncArray, fn, initialValue, cb) {
         let i = 0;
 
         let [result, length] = await Promise.all([
-            initialValue || getElement(asyncArray, 0),
-            getLength(asyncArray)
+            initialValue || await promisify(asyncArray.get, 0),
+            await promisify(asyncArray.length)
         ])
 
         if (!initialValue)
             i = 1;
-        while (await getLess(i, length)) {
-            let element = await getElement(asyncArray, i);
-            result = await new Promise(function (resolve) {
-                fn(result, element, i, asyncArray, (res) => resolve(res))
-            });
-            i = await getAdd(i, 1);
+        while (await promisify(less, i, length)) {
+            let element = await promisify(asyncArray.get, i);
+            result = await promisify(fn, result, element, i, asyncArray);
+            i = await promisify(add, i, 1);
         }
-        resolve(result);
-    }).then(cb)
+        cb(result);
 }
